@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 import pypinyin
 import editdistance
 import random
@@ -29,9 +28,11 @@ with open(mask_ngram_file) as f:
             item["count"] = int(cand_info[1])
             ngram_mask[info[0]].append(item)
 
+
 def pinyin(text):
     py = pypinyin.pinyin(text, style=pypinyin.Style.TONE3)
     return ''.join([x[0] for x in py])
+
 
 def rewrite_ngram(ngrams):
     candidates = []
@@ -46,10 +47,11 @@ def rewrite_ngram(ngrams):
             new_ngram = ngram[:-1] + ''
             if new_ngram in ngram_mask:
                 ngram_pinyin = pinyin(ngram)
+                print("ngram_pinyin: ", ngram_pinyin)
                 for mngrams in ngram_mask[new_ngram]:
                     cand_pinyin = pinyin(mngrams["ngram"])
                     mngrams["distance"] = editdistance.eval(ngram_pinyin, cand_pinyin)
-                cands = sorted(ngram_mask[new_ngram], key = lambda k : k["distance"])
+                cands = sorted(ngram_mask[new_ngram], key=lambda k: k["distance"])
                 best_distance = cands[0]["distance"]
                 for c in cands:
                     if c["distance"] == best_distance:
@@ -63,6 +65,7 @@ def rewrite_ngram(ngrams):
     random.shuffle(candidates)
     print("candidates:", candidates)
     return candidates[:beam_size]
+
 
 def query_correct(query):
     q = '_' + query + '_'
@@ -87,6 +90,7 @@ def query_correct(query):
                 if cands[-2:] == gram[:2]:
                     new_query_cands.add(cands + gram[-1])
         query_cands = new_query_cands
+        print("==========new_query_cands: ", new_query_cands)
         index += 1
 
     best_distance = 1000
@@ -99,9 +103,10 @@ def query_correct(query):
 
     return best_cand[1:-1]
 
+
 if __name__ == '__main__':
     query = '宾馆的Wafi怎么链接'
-    #query = '你知道吗'
+    # query = '你知道吗'
     print("query:", query)
     new_query = query_correct(query)
     print("new query:", new_query)

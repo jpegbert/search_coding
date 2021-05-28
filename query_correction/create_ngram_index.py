@@ -11,7 +11,7 @@ for filename in files:
             query = ['_' + info[0] + '_', '_' + info[1] + '_']
             for q in query:
                 for i in range(len(q) - k + 1):
-                    kgram = q[i : i+k]
+                    kgram = q[i: i+k]
                     if kgram not in ngram_index:
                         ngram_index[kgram] = 0
                     ngram_index[kgram] += 1
